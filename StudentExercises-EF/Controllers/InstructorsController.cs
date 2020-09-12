@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StudentExercises_EF.Data;
 using StudentExercises_EF.Models;
+using StudentExercises_EF.Models.ViewModels;
 
 namespace StudentExercises_EF.Controllers
 {
@@ -48,8 +49,17 @@ namespace StudentExercises_EF.Controllers
         // GET: Instructors/Create
         public IActionResult Create()
         {
-            ViewData["CohortId"] = new SelectList(_context.Cohort, "Id", "Id");
-            return View();
+            InstructorCohortViewModel vm = new InstructorCohortViewModel();
+
+            vm.cohorts = _context.Cohort.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToList();
+
+            vm.cohorts.Insert(0, new SelectListItem() { Value = "0", Text = "Please Choose a Cohort" });
+
+            return View(vm);
         }
 
         // POST: Instructors/Create
@@ -82,8 +92,20 @@ namespace StudentExercises_EF.Controllers
             {
                 return NotFound();
             }
-            ViewData["CohortId"] = new SelectList(_context.Cohort, "Id", "Id", instructor.CohortId);
-            return View(instructor);
+            InstructorCohortViewModel vm = new InstructorCohortViewModel();
+
+            vm.instructor = await _context.Instructor
+               .FirstOrDefaultAsync(m => m.Id == id);
+
+            vm.cohorts = _context.Cohort.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToList();
+
+            vm.cohorts.Insert(0, new SelectListItem() { Value = "0", Text = "Please Choose a Cohort" });
+
+            return View(vm);
         }
 
         // POST: Instructors/Edit/5
