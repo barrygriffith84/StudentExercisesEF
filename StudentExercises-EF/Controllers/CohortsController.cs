@@ -38,6 +38,8 @@ namespace StudentExercises_EF.Controllers
 
             //Go to the database, get everything from cohort where the return ID from firstordefault == the id from the browser.  If it returns nothing, it returns the notfound method.
             var cohort = await _context.Cohort
+                .Include(c => c.Students)
+                .Include(c => c.Instructors)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cohort == null)
             {
